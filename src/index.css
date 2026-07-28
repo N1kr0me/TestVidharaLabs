@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+/* VidharaLabs brand — ceramic light / charcoal dark, logo accents */
+:root {
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+
+  /* Ceramic off-white */
+  --bg: #f3efe8;
+  --surface: #faf7f2;
+  --surface-2: #ebe6de;
+  --ink: #2a2433;
+  --muted: #6b6570;
+  --border: #ddd5ca;
+  --ring: rgba(91, 168, 168, 0.45);
+
+  /* Logo palette */
+  --plum: #45355e;
+  --lavender: #8b7ba8;
+  --teal: #5ba8a8;
+  --teal-deep: #2f7f7f;
+  --cyan-v: #8ed0d4;
+  --accent: var(--teal);
+  --accent-2: var(--lavender);
+  --danger: #9b4a5a;
+  --warn: #b8860b;
+  --ok: #3d7a5a;
+
+  --banner-from: rgba(91, 168, 168, 0.22);
+  --banner-to: rgba(139, 123, 168, 0.22);
+  --glow: rgba(91, 168, 168, 0.55);
+  --glow-2: rgba(139, 123, 168, 0.45);
+}
+
+.dark {
+  /* Charcoal gray */
+  --bg: #2a2a2a;
+  --surface: #333333;
+  --surface-2: #3d3d3d;
+  --ink: #f2efe9;
+  --muted: #a8a29a;
+  --border: #4a4a4a;
+  --ring: rgba(142, 208, 212, 0.4);
+
+  --plum: #c4b8d4;
+  --lavender: #a99bc4;
+  --teal: #6ec4c4;
+  --teal-deep: #8ed0d4;
+  --cyan-v: #a8e0e3;
+  --accent: var(--teal);
+  --accent-2: var(--lavender);
+  --danger: #e07a8a;
+  --warn: #d4a84b;
+  --ok: #6fba8f;
+
+  --banner-from: rgba(110, 196, 196, 0.16);
+  --banner-to: rgba(169, 155, 196, 0.16);
+  --glow: rgba(110, 196, 196, 0.5);
+  --glow-2: rgba(169, 155, 196, 0.4);
+}
+
+@theme {
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-plum: var(--plum);
+  --color-lavender: var(--lavender);
+  --color-teal: var(--teal);
+  --color-teal-deep: var(--teal-deep);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --color-ok: var(--ok);
+  --animate-star-btn: star-btn calc(var(--duration, 3) * 1s) linear infinite;
+}
+
+@keyframes star-btn {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--surface-2);
+  z-index: 0;
+}
+
+/* Banner — soft brand wash (no broken mask borders) */
+.banner-rainbow {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid color-mix(in oklab, var(--teal) 35%, var(--border));
+  box-shadow: 0 0 18px color-mix(in oklab, var(--lavender) 18%, transparent);
+}
+
+.banner-rainbow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--teal) 14%, transparent),
+    color-mix(in oklab, var(--lavender) 14%, transparent),
+    color-mix(in oklab, var(--cyan-v) 14%, transparent)
+  );
+}
+
+/* Glowing-effect mask helpers (Aceternity) */
+.glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}

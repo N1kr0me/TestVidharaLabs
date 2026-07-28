@@ -78,16 +78,6 @@
   --color-danger: var(--danger);
   --color-warn: var(--warn);
   --color-ok: var(--ok);
-  --animate-star-btn: star-btn calc(var(--duration, 3) * 1s) linear infinite;
-}
-
-@keyframes star-btn {
-  0% {
-    offset-distance: 0%;
-  }
-  100% {
-    offset-distance: 100%;
-  }
 }
 
 body {

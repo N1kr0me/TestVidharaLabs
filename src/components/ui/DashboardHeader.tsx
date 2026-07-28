@@ -1,6 +1,6 @@
 import { ChevronDown, Moon, Sun } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { StarButton } from './StarButton'
+import { RippleButton } from './RippleButton'
 
 type Props = {
   theme: 'light' | 'dark'
@@ -26,14 +26,12 @@ function scrollToSection(href: string) {
   }
 }
 
-/** 21st: sshahaider/navigation-menu — nav uses star-button design */
+/** 21st: sshahaider/navigation-menu — nav uses ripple-button */
 export function DashboardHeader({
   theme,
   onToggleTheme,
   activeSection = 'map',
 }: Props) {
-  const lightColor = theme === 'dark' ? '#8ed0d4' : '#5ba8a8'
-
   return (
     <header className="sticky top-0 z-[1100] border-b border-border bg-surface/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-5 py-3">
@@ -58,15 +56,14 @@ export function DashboardHeader({
           aria-label="Primary"
         >
           {NAV.map((item) => (
-            <StarButton
+            <RippleButton
               key={item.id}
-              lightColor={lightColor}
               active={activeSection === item.id}
               onClick={() => scrollToSection(item.href)}
               aria-current={activeSection === item.id ? 'page' : undefined}
             >
               {item.label}
-            </StarButton>
+            </RippleButton>
           ))}
         </nav>
 
@@ -93,13 +90,9 @@ export function DashboardHeader({
             />
           </div>
 
-          <button
-            type="button"
+          <RippleButton
+            className="h-9 w-9 !px-0"
             onClick={onToggleTheme}
-            className={cn(
-              'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border',
-              'bg-surface text-ink transition hover:border-teal hover:text-teal',
-            )}
             aria-label={
               theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
             }
@@ -109,7 +102,7 @@ export function DashboardHeader({
             ) : (
               <Moon className="h-4 w-4" />
             )}
-          </button>
+          </RippleButton>
         </div>
       </div>
     </header>

@@ -1,9 +1,8 @@
 {
   "name": "vidhara-labs-hosting",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
-  "description": "Vercel hosting root for VidharaLabs Phase 0/1/2 dashboards",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -32,5 +31,6 @@
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.1.1"
-  }
+  },
+  "description": "Vercel hosting root for VidharaLabs Phase 0/1/2 dashboards"
 }

@@ -38,6 +38,7 @@ export interface EnvironmentalFeatures {
   consecutiveWetDays: number
   soilMoisture: number
   soilPh: number
+  /** Kept for type compat; not fetched live (no NDVI API in mock). */
   ndvi: number
   vapourPressureDeficit: number
   topographicWetnessIndex: number
@@ -45,6 +46,11 @@ export interface EnvironmentalFeatures {
   elevationSource: 'open-meteo-elevation' | 'synthetic'
   source: 'open-meteo+synthetic' | 'synthetic-fallback'
   fetchedAt: string
+  /** Mean daily shortwave radiation sum (MJ/m²) when API provides it */
+  shortwaveRadiationSum?: number
+  consecutiveHighRhDays?: number
+  heatStressDays?: number
+  drySpellDays?: number
 }
 
 export interface Phase0Prediction {
@@ -103,7 +109,8 @@ export async function fetchFeatures(
   try {
     const url =
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-      `&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,relative_humidity_2m_mean,precipitation_sum` +
+      `&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,relative_humidity_2m_mean,precipitation_sum,shortwave_radiation_sum,et0_fao_evapotranspiration` +
+      `&hourly=vapour_pressure_deficit` +
       `&past_days=14&forecast_days=1&timezone=Asia%2FKolkata`
 
     const res = await fetch(url)
@@ -116,6 +123,7 @@ export async function fetchFeatures(
     const mins = daily.temperature_2m_min as number[]
     const rhs = daily.relative_humidity_2m_mean as number[]
     const precip = daily.precipitation_sum as number[]
+    const radiation = (daily.shortwave_radiation_sum as number[] | undefined) ?? []
 
     const meanTempC = avg(temps)
     const maxTempC = Math.max(...maxes)
@@ -133,6 +141,39 @@ export async function fetchFeatures(
       }
     }
 
+    let consecutiveHighRhDays = 0
+    let rhRun = 0
+    for (const rh of rhs) {
+      if (rh >= 80) {
+        rhRun++
+        consecutiveHighRhDays = Math.max(consecutiveHighRhDays, rhRun)
+      } else {
+        rhRun = 0
+      }
+    }
+
+    const heatStressDays = maxes.filter((t) => t >= 35).length
+    let drySpellDays = 0
+    let dryRun = 0
+    for (const p of precip) {
+      if (p < 1) {
+        dryRun++
+        drySpellDays = Math.max(drySpellDays, dryRun)
+      } else {
+        dryRun = 0
+      }
+    }
+
+    let vpd = synth.vapourPressureDeficit
+    const hourlyVpd = data.hourly?.vapour_pressure_deficit as number[] | undefined
+    if (hourlyVpd?.length) {
+      const valid = hourlyVpd.filter((x) => typeof x === 'number' && !Number.isNaN(x))
+      if (valid.length) vpd = Number(avg(valid).toFixed(2))
+    }
+
+    // Prefer API soil moisture if present on archive-style fields; else synthetic
+    const soilMoisture = synth.soilMoisture
+
     const elevApi = await elevPromise
     const elevationM = elevApi ?? syntheticElevation(lat, lon)
 
@@ -145,12 +186,21 @@ export async function fetchFeatures(
       relativeHumidityPct: Number(relativeHumidityPct.toFixed(0)),
       rainfallEvents30d,
       consecutiveWetDays,
-      ...synth,
+      soilMoisture,
+      soilPh: synth.soilPh,
+      ndvi: 0,
+      vapourPressureDeficit: vpd,
+      topographicWetnessIndex: synth.topographicWetnessIndex,
       elevationM,
       elevationSource:
         elevApi != null ? 'open-meteo-elevation' : 'synthetic',
       source: 'open-meteo+synthetic',
       fetchedAt,
+      shortwaveRadiationSum:
+        radiation.length > 0 ? Number(avg(radiation).toFixed(1)) : undefined,
+      consecutiveHighRhDays,
+      heatStressDays,
+      drySpellDays,
     }
   } catch {
     const s = seedFromCoords(lat, lon)
@@ -166,12 +216,20 @@ export async function fetchFeatures(
       relativeHumidityPct: Number(lerp(55, 92, 1 - s).toFixed(0)),
       rainfallEvents30d: Math.round(lerp(3, 14, s)),
       consecutiveWetDays: Math.round(lerp(1, 9, s)),
-      ...synth,
+      soilMoisture: synth.soilMoisture,
+      soilPh: synth.soilPh,
+      ndvi: 0,
+      vapourPressureDeficit: synth.vapourPressureDeficit,
+      topographicWetnessIndex: synth.topographicWetnessIndex,
       elevationM,
       elevationSource:
         elevApi != null ? 'open-meteo-elevation' : 'synthetic',
       source: 'synthetic-fallback',
       fetchedAt,
+      shortwaveRadiationSum: Number(lerp(12, 22, 1 - s).toFixed(1)),
+      consecutiveHighRhDays: Math.round(lerp(1, 8, 1 - s)),
+      heatStressDays: Math.round(lerp(1, 7, s)),
+      drySpellDays: Math.round(lerp(2, 10, s)),
     }
   }
 }
@@ -392,12 +450,6 @@ export function buildFeatureRows(
     return 'OK'
   }
 
-  const ndviWatch = (): FeatureWatch => {
-    if (f.ndvi < 0.4) return 'Elevated'
-    if (f.ndvi < 0.45) return 'Watch'
-    return 'OK'
-  }
-
   const vpdWatch = (): FeatureWatch => {
     if (f.vapourPressureDeficit >= 2.5) return 'Elevated'
     if (f.vapourPressureDeficit >= 2.2 || f.vapourPressureDeficit < 0.8) {
@@ -454,9 +506,35 @@ export function buildFeatureRows(
       watch: 'OK',
     },
     {
-      label: 'NDVI',
-      value: String(f.ndvi),
-      watch: ndviWatch(),
+      label: 'Shortwave radiation',
+      value:
+        f.shortwaveRadiationSum != null
+          ? `${f.shortwaveRadiationSum} MJ/m²`
+          : '—',
+      watch:
+        f.shortwaveRadiationSum != null && f.shortwaveRadiationSum < 15
+          ? 'Watch'
+          : 'OK',
+    },
+    {
+      label: 'Consecutive RH ≥80% days',
+      value: String(f.consecutiveHighRhDays ?? '—'),
+      watch:
+        (f.consecutiveHighRhDays ?? 0) >= 7
+          ? 'Elevated'
+          : (f.consecutiveHighRhDays ?? 0) >= 5
+            ? 'Watch'
+            : 'OK',
+    },
+    {
+      label: 'Heat-stress days (≥35°C)',
+      value: String(f.heatStressDays ?? '—'),
+      watch:
+        (f.heatStressDays ?? 0) >= 5
+          ? 'Elevated'
+          : (f.heatStressDays ?? 0) >= 3
+            ? 'Watch'
+            : 'OK',
     },
     {
       label: 'VPD',

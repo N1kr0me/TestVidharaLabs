@@ -1,41 +1,51 @@
-# VidharaLabs — Dashboard hosting (Vercel)
+# VidharaLabs — Hosting (Vercel)
 
-This folder is the **deploy root** for [TestVidharaLabs](https://github.com/N1kr0me/TestVidharaLabs.git).
+Deploy root for **Full Product Mock-up** (V1–V4 + roles). Replaces the former Phase 0 demo.
 
-Vercel builds from here. Do not put design-only notes (`Components/*.txt`) or local experiments here — only what the live dashboard needs.
+**Repo:** [N1kr0me/TestVidharaLabs](https://github.com/N1kr0me/TestVidharaLabs)  
+**Live:** Vercel project pointed at this repo’s `main` branch.
 
-## Current contents
+## What’s deployed
 
-- **Phase 0** Predictive Quality Intelligence dashboard (district map, features, predictions)
-- Phase 1 / Phase 2 will be appended later in this same project (routes + phase switcher)
+- **Product:** Full Product Mock-up (`dashboard/Full product Mock up` synced here)
+- **Versions:** V1 single · V2 compare-2 · V3 compare-≤5 · **V4 ranking** (default)
+- **Roles:** Quality Head · Agronomy Team · Procurement Head (mock dropdown)
+- **Layers:** Disease/Quality bands · Compliance 0–10 (8 markets) + Contamination · Compound yield 0–10 · Sourcing proxy · Short role summary
+- **Data:** Open-Meteo (live + archive) for selected AP chilli districts; peer ranks via seasonal proxies
+- **Stack:** Vite + React + TypeScript + Tailwind + Leaflet
 
-## Local check
+Phase 0 lives under `dashboard/Phase 0/` in the main workspace (not deployed from this folder).
+
+## Local commands
 
 ```powershell
-cd hosting
+cd F:\VidharaLabs\hosting
 npm install
 npm run build
 npm run preview
 ```
 
-## Update workflow (after each phase)
+## Sync from product source (before deploy)
 
-1. Develop in `F:\VidharaLabs\dashboard` (or update this folder directly).
-2. Sync / rebuild the app files into `hosting`.
-3. Commit and push to `main` on `N1kr0me/TestVidharaLabs`.
-4. Vercel auto-deploys the new version.
-
-## Vercel project settings
-
-| Setting | Value |
-|--------|--------|
-| Root Directory | repo root (this folder) |
-| Framework | Vite |
-| Build Command | `npm run build` |
-| Output Directory | `dist` |
-
-## Git remote
-
+```powershell
+# From workspace: copy Full product Mock up → hosting (preserve vercel.json)
+$src = "F:\VidharaLabs\dashboard\Full product Mock up"
+$dst = "F:\VidharaLabs\hosting"
+Remove-Item "$dst\src","$dst\public" -Recurse -Force -ErrorAction SilentlyContinue
+Copy-Item "$src\src","$dst\src" -Recurse
+Copy-Item "$src\public","$dst\public" -Recurse
+Copy-Item "$src\index.html","$src\package.json","$src\package-lock.json","$src\vite.config.ts","$src\tsconfig.json","$src\tsconfig.app.json","$src\tsconfig.node.json","$src\eslint.config.js" $dst -Force
 ```
-origin → https://github.com/N1kr0me/TestVidharaLabs.git
-```
+
+Then `npm install`, `npm run build`, commit, push `main`.
+
+## Vercel
+
+- `vercel.json` — Vite framework, `npm run build`, output `dist`
+- Push to `origin/main` triggers production deploy
+
+## Notes
+
+- No API keys required for Open-Meteo.
+- Disclaimer on every intelligence layer: AI/ML-generated data.
+- Scores do not change by role; L5 wording/actions do.

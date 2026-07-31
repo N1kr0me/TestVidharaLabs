@@ -5,7 +5,6 @@ type Props = {
   className?: string
 }
 
-/** 21st: nevsky118/footer */
 export function AppFooter({ className }: Props) {
   return (
     <footer
@@ -36,8 +35,8 @@ export function AppFooter({ className }: Props) {
             <Globe className="h-3.5 w-3.5" />
             vidharalabs.com
           </a>
-          <span>Phase 0 · Blended disease signal</span>
-          <span>ASTA / Capsaicin / Oleoresin in Phase 1</span>
+          <span>Full product mockup · synthetic / rule-based</span>
+          <span>Decision-support only — not legal advice</span>
         </div>
       </div>
     </footer>

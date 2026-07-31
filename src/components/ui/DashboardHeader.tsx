@@ -1,37 +1,56 @@
 import { ChevronDown, Moon, Sun } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { RippleButton } from './RippleButton'
+import {
+  PRODUCT_VERSIONS,
+  type ProductVersionId,
+} from '@/lib/versions'
+import { USER_ROLES, type UserRoleId } from '@/lib/roles'
 
 type Props = {
   theme: 'light' | 'dark'
   onToggleTheme: () => void
-  /** Active section for nav highlight */
-  activeSection?: 'map' | 'features' | 'predictions'
+  version: ProductVersionId
+  onVersionChange: (id: ProductVersionId) => void
+  role: UserRoleId
+  onRoleChange: (id: UserRoleId) => void
+  activeSection?: 'location' | 'predictions' | 'features' | 'rankings'
 }
 
 const NAV = [
-  { id: 'map' as const, label: 'District map', href: '#section-map' },
-  { id: 'features' as const, label: 'Features', href: '#section-features' },
+  { id: 'location' as const, label: 'Location', href: '#section-location' },
   {
     id: 'predictions' as const,
-    label: 'Predictions',
+    label: 'Layers',
     href: '#section-predictions',
+  },
+  { id: 'features' as const, label: 'Features', href: '#section-features' },
+  {
+    id: 'rankings' as const,
+    label: 'Top 5',
+    href: '#section-rankings',
+    v4Only: true,
   },
 ]
 
 function scrollToSection(href: string) {
   const el = document.querySelector(href)
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-/** 21st: sshahaider/navigation-menu — nav uses ripple-button */
+/** Header with version + role switchers (replaces Phase 0 phase dropdown). */
 export function DashboardHeader({
   theme,
   onToggleTheme,
-  activeSection = 'map',
+  version,
+  onVersionChange,
+  role,
+  onRoleChange,
+  activeSection = 'location',
 }: Props) {
+  const nav = NAV.filter(
+    (item) => !('v4Only' in item && item.v4Only) || version === 'V4-ranking',
+  )
   return (
     <header className="sticky top-0 z-[1100] border-b border-border bg-surface/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-5 py-3">
@@ -46,16 +65,16 @@ export function DashboardHeader({
               VidharaLabs
             </p>
             <h1 className="truncate font-serif text-lg leading-tight text-ink">
-              Predictive Quality Intelligence
+              Full Product Mockup
             </h1>
           </div>
         </div>
 
         <nav
-          className="hidden items-center gap-2 text-sm md:flex"
+          className="hidden items-center gap-2 text-sm lg:flex"
           aria-label="Primary"
         >
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <RippleButton
               key={item.id}
               active={activeSection === item.id}
@@ -67,25 +86,49 @@ export function DashboardHeader({
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <div className="relative hidden sm:block">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="relative">
             <select
-              disabled
-              value="0"
-              aria-label="Dashboard phase (coming soon)"
-              title="Phase switcher disabled until Phase 1 and Phase 2 mockups are ready"
+              value={version}
+              onChange={(e) =>
+                onVersionChange(e.target.value as ProductVersionId)
+              }
+              aria-label="Dashboard version"
               className={cn(
                 'appearance-none rounded-full border border-border bg-surface-2',
-                'py-1 pl-2.5 pr-7 text-[11px] font-semibold text-plum',
-                'cursor-not-allowed opacity-70',
+                'max-w-[11rem] py-1 pl-2.5 pr-7 text-[11px] font-semibold text-plum sm:max-w-none',
               )}
             >
-              <option value="0">Phase 0 — Directional MVP</option>
-              <option value="1">Phase 1 — Validated Pilot</option>
-              <option value="2">Phase 2 — Commercial Scale</option>
+              {PRODUCT_VERSIONS.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.shortLabel}
+                </option>
+              ))}
             </select>
             <ChevronDown
-              className="pointer-events-none absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-plum opacity-60"
+              className="pointer-events-none absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-plum"
+              aria-hidden
+            />
+          </div>
+
+          <div className="relative">
+            <select
+              value={role}
+              onChange={(e) => onRoleChange(e.target.value as UserRoleId)}
+              aria-label="User role"
+              className={cn(
+                'appearance-none rounded-full border border-border bg-surface-2',
+                'max-w-[9rem] py-1 pl-2.5 pr-7 text-[11px] font-semibold text-ink sm:max-w-none',
+              )}
+            >
+              {USER_ROLES.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="pointer-events-none absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-muted"
               aria-hidden
             />
           </div>

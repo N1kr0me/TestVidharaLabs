@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { FeaturesTable } from '@/components/ui/FeaturesTable'
-import { GlowCard } from '@/components/ui/GlowCard'
 import { RankBadge } from '@/components/ui/RankBadge'
 import { StatisticsCards, type StatCard } from '@/components/ui/StatisticsCards'
 import { LayerCard } from '@/layers/LayerCard'
@@ -8,7 +7,6 @@ import { INTELLIGENCE_LAYERS } from '@/layers/types'
 import { buildFeatureRows } from '@/lib/features'
 import {
   l5Summary,
-  topN,
   COMPLIANCE_MARKETS,
   type ComplianceMarket,
   type ProductPrediction,
@@ -22,7 +20,7 @@ type Props = {
   prediction: ProductPrediction
   ranked: RankedRow[]
   loading?: boolean
-  /** V4 only — per-score rank badges + Top 5 rankings card */
+  /** V4 only — per-score rank badges (full tables live in RankingView) */
   showRanks?: boolean
 }
 
@@ -211,7 +209,10 @@ export function IntelligenceLayers({
               <>
                 <RankBadge rank={ranks.disease} of={total} />
                 <RankBadge rank={ranks.quality} of={total} />
+                <RankBadge rank={ranks.contamination} of={total} />
                 <RankBadge rank={ranks.complianceBest} of={total} />
+                <RankBadge rank={ranks.compoundYield} of={total} />
+                <RankBadge rank={ranks.sourcing} of={total} />
               </>
             ) : null}
           </div>
@@ -225,52 +226,6 @@ export function IntelligenceLayers({
           caption={`Source: ${p.features.source} · ${new Date(p.features.fetchedAt).toLocaleString()} · NDVI omitted (no live API)`}
         />
       </div>
-
-      {showRanks ? (
-        <div id="section-rankings" className="scroll-mt-24">
-          <GlowCard padding="lg">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-plum">
-              Rankings
-            </p>
-            <h3 className="mt-0.5 font-serif text-xl text-ink">Top 5 by layer</h3>
-            <p className="mt-1 text-xs text-muted">
-              Peer pool ranked with the same rules. Selected district highlighted.
-            </p>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {(
-                [
-                  ['disease', 'Disease (best = lowest risk)'],
-                  ['quality', 'Quality potential'],
-                  ['complianceBest', 'Best compliance score'],
-                  ['compoundYield', 'Compound yield'],
-                  ['sourcing', 'Sourcing proxy'],
-                ] as const
-              ).map(([key, label]) => (
-                <div
-                  key={key}
-                  className="rounded-xl border border-border bg-bg/70 px-3 py-3"
-                >
-                  <p className="text-xs font-semibold text-ink">{label}</p>
-                  <ol className="mt-2 space-y-1 text-xs text-muted">
-                    {topN(ranked, key, 5).map((r) => (
-                      <li
-                        key={r.prediction.district.id}
-                        className={
-                          r.prediction.district.id === p.district.id
-                            ? 'font-semibold text-teal'
-                            : ''
-                        }
-                      >
-                        #{r.ranks[key]} {r.prediction.district.name}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              ))}
-            </div>
-          </GlowCard>
-        </div>
-      ) : null}
     </div>
   )
 }

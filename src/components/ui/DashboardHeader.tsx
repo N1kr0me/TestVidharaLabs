@@ -27,7 +27,7 @@ const NAV = [
   { id: 'features' as const, label: 'Features', href: '#section-features' },
   {
     id: 'rankings' as const,
-    label: 'Top 5',
+    label: 'Rankings',
     href: '#section-rankings',
     v4Only: true,
   },

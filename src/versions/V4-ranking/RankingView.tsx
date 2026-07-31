@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { DistrictPicker } from '@/components/DistrictPicker'
+import { DistrictRankingLeaderboards } from '@/components/DistrictRankingLeaderboards'
 import { IntelligenceLayers } from '@/components/IntelligenceLayers'
+import { GlowCard } from '@/components/ui/GlowCard'
 import { StageSelect } from '@/components/ui/StageSelect'
 import { districts, type District } from '@/data/districts'
 import {
@@ -25,6 +27,11 @@ export function RankingView({ role }: Props) {
   const [error, setError] = useState<string | null>(null)
 
   const district = selected[0] ?? districts[0]
+
+  const selectById = (id: string) => {
+    const d = districts.find((x) => x.id === id)
+    if (d) setSelected([d])
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -80,6 +87,7 @@ export function RankingView({ role }: Props) {
           }
         />
       </li>
+
       <li id="section-predictions" className="scroll-mt-24 md:col-span-12">
         {error ? (
           <p className="mb-3 rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-xs text-danger">
@@ -97,6 +105,17 @@ export function RankingView({ role }: Props) {
         ) : (
           <p className="text-sm text-muted">Loading live season signals…</p>
         )}
+      </li>
+
+      <li className="md:col-span-12">
+        <GlowCard padding="lg">
+          <DistrictRankingLeaderboards
+            ranked={ranked}
+            selectedId={district.id}
+            onSelect={selectById}
+            stageLabel={stage}
+          />
+        </GlowCard>
       </li>
     </ul>
   )

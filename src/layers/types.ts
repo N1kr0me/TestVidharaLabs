@@ -1,9 +1,9 @@
 export type IntelligenceLayerId =
-  | 'quality-disease'
+  | 'contamination'
+  | 'quality'
   | 'compliance'
   | 'compound-yield'
-  | 'procurement'
-  | 'role-decision'
+  | 'sourcing-summary'
 
 export type IntelligenceLayerMeta = {
   id: IntelligenceLayerId
@@ -14,38 +14,38 @@ export type IntelligenceLayerMeta = {
 
 export const INTELLIGENCE_LAYERS: IntelligenceLayerMeta[] = [
   {
-    id: 'quality-disease',
+    id: 'contamination',
     number: 1,
-    title: 'Quality Index & Disease Index',
+    title: 'Contamination decision',
     subtitle:
-      'Directional quality potential and disease-favourable conditions from Unified Strategy rules (bands vs regional history).',
+      'Overall contamination decision with fungal, bacterial, viral, heavy metal, and pesticide residue pathways.',
+  },
+  {
+    id: 'quality',
+    number: 2,
+    title: 'Quality decision',
+    subtitle:
+      'Company-weighted quality from ASTA colour, capsaicin, and oleoresin leans.',
   },
   {
     id: 'compliance',
-    number: 2,
-    title: 'Compliance readiness',
+    number: 3,
+    title: 'Compliance decision (MRL mock)',
     subtitle:
-      'Import readiness (0–10) by market — India, EU, China, Thailand, Bangladesh, USA, Indonesia, Sri Lanka, Malaysia — from contamination / aflatoxin pressure.',
+      'Destination readiness from pesticide + aflatoxin pressure vs mock MRL path. Exact formulae TBD.',
   },
   {
     id: 'compound-yield',
-    number: 3,
+    number: 4,
     title: 'Compound yield',
     subtitle:
-      'Weather-based biomass/yield conduciveness × quality factor (0–10). No live NDVI.',
+      'Weather × quality yield conduciveness as a band decision (no live NDVI).',
   },
   {
-    id: 'procurement',
-    number: 4,
-    title: 'Procurement — sourcing reliability',
-    subtitle:
-      'Regional risk proxy (0–10) from L1–L3 signals — not validated delivery reliability.',
-  },
-  {
-    id: 'role-decision',
+    id: 'sourcing-summary',
     number: 5,
-    title: 'Role-based decision summary',
+    title: 'Sourcing decision & role summary',
     subtitle:
-      'Same underlying prediction, translated for the active role (L5 persona engine).',
+      'Sourcing decision table from disease, quality, and yield — role explains the same underlying decisions.',
   },
 ]

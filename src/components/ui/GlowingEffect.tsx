@@ -16,6 +16,8 @@ type Props = {
   variant?: 'default' | 'white'
   glow?: boolean
   className?: string
+  /** Always-on frame border (when glow is enabled). */
+  staticBorderClassName?: string
   disabled?: boolean
   movementDuration?: number
   borderWidth?: number
@@ -33,6 +35,7 @@ export const GlowingEffect = memo(function GlowingEffect({
   variant = 'default',
   glow = true,
   className,
+  staticBorderClassName,
   movementDuration = 2,
   borderWidth = 2,
   disabled = false,
@@ -132,7 +135,8 @@ export const GlowingEffect = memo(function GlowingEffect({
     <>
       <div
         className={cn(
-          'pointer-events-none absolute -inset-px rounded-[inherit] border border-border opacity-0 transition-opacity',
+          'pointer-events-none absolute -inset-px rounded-[inherit] border opacity-0 transition-opacity',
+          staticBorderClassName ?? 'border-border',
           glow && 'opacity-100',
           disabled && 'block',
         )}

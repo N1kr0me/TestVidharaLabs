@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { StatusBadge } from './StatusBadge'
-import { EvidenceBadge } from './EvidenceBadge'
 import { RankBadge } from './RankBadge'
+import { BandLegend, type BandLegendItem } from './BandLegend'
 
 export type StatCard = {
   title: string
@@ -11,10 +11,11 @@ export type StatCard = {
   description: string
   tone: 'danger' | 'warn' | 'ok' | 'neutral'
   status?: string
-  evidence?: string
   rank?: number
   rankOf?: number
   headerSlot?: ReactNode
+  /** Full band scale legend (when value is a band) */
+  bandLegend?: BandLegendItem[]
   footer?: ReactNode
 }
 
@@ -98,14 +99,29 @@ export function StatisticsCards({
                   <RankBadge rank={card.rank} of={card.rankOf} />
                 ) : null}
                 {card.status ? <StatusBadge label={card.status} /> : null}
-                {card.evidence ? <EvidenceBadge label={card.evidence} /> : null}
               </div>
             </div>
 
-            <p className="line-clamp-3 text-center text-[10px] leading-snug text-muted">
+            <p className="line-clamp-4 text-center text-[10px] leading-snug text-muted">
               {card.description}
             </p>
-            {card.footer ? <div className="mt-2 text-center">{card.footer}</div> : null}
+            {card.bandLegend && card.bandLegend.length > 0 ? (
+              <div className="mt-2 border-t border-border/70 pt-2">
+                <BandLegend items={card.bandLegend} active={card.value} />
+              </div>
+            ) : null}
+            {card.footer ? (
+              <div
+                className={cn(
+                  'mt-2 text-center',
+                  card.bandLegend
+                    ? 'border-t border-border/50 pt-2'
+                    : 'border-t border-border/70 pt-2',
+                )}
+              >
+                {card.footer}
+              </div>
+            ) : null}
           </div>
         ))}
       </div>

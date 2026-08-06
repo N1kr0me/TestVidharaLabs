@@ -1,14 +1,19 @@
 @import 'tailwindcss';
 @import 'leaflet/dist/leaflet.css';
 
+/* Match app theme toggle (html.dark) — not OS prefers-color-scheme alone */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* VidharaLabs brand — ceramic light / charcoal dark, logo accents */
 :root {
-  --font-sans: 'DM Sans', system-ui, sans-serif;
-  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', 'Inter', system-ui, sans-serif;
+  --font-serif: 'Source Serif 4', 'Lora', Georgia, serif;
 
-  /* Ceramic off-white */
-  --bg: #f3efe8;
-  --surface: #faf7f2;
+  /* District stage (behind district cards) */
+  --bg: #ffffff;
+  /* Nav / top bar / ranking column */
+  --chrome: #dfd4c2;
+  --surface: #dfd4c2;
   --surface-2: #ebe6de;
   --ink: #2a2433;
   --muted: #6b6570;
@@ -17,53 +22,66 @@
 
   /* Logo palette */
   --plum: #45355e;
-  --lavender: #8b7ba8;
-  --teal: #5ba8a8;
-  --teal-deep: #2f7f7f;
+  --lavender: #7e69a7;
+  --lavender-deep: #5c4a80;
+  --teal: #3e9898;
+  --teal-deep: #2d7272;
   --cyan-v: #8ed0d4;
   --accent: var(--teal);
   --accent-2: var(--lavender);
-  --danger: #9b4a5a;
+  --danger: #dc2626;
   --warn: #b8860b;
-  --ok: #3d7a5a;
+  --ok: #308f38;
+  --progress-ok: var(--ok);
+  --progress-warn: var(--warn);
+  --progress-danger: var(--danger);
 
-  --banner-from: rgba(91, 168, 168, 0.22);
-  --banner-to: rgba(139, 123, 168, 0.22);
-  --glow: rgba(91, 168, 168, 0.55);
-  --glow-2: rgba(139, 123, 168, 0.45);
+  --banner-from: rgba(62, 152, 152, 0.22);
+  --banner-to: rgba(126, 105, 167, 0.22);
+  --glow: rgba(62, 152, 152, 0.7);
+  --glow-2: rgba(126, 105, 167, 0.45);
 }
 
 .dark {
-  /* Charcoal gray */
-  --bg: #2a2a2a;
-  --surface: #333333;
-  --surface-2: #3d3d3d;
+  /* Behind district cards — pure black */
+  --bg: #000000;
+  /* Chrome: nav / top bar / ranking column */
+  --chrome: #252525;
+  --surface: #252525;
+  --surface-2: #2e2e2e;
   --ink: #f2efe9;
   --muted: #a8a29a;
   --border: #4a4a4a;
   --ring: rgba(142, 208, 212, 0.4);
 
   --plum: #c4b8d4;
-  --lavender: #a99bc4;
-  --teal: #6ec4c4;
-  --teal-deep: #8ed0d4;
+  --lavender: #7e69a7;
+  --lavender-deep: #5c4a80;
+  --teal: #3e9898;
+  --teal-deep: #2d7272;
   --cyan-v: #a8e0e3;
   --accent: var(--teal);
   --accent-2: var(--lavender);
-  --danger: #e07a8a;
+  --danger: #f87171;
   --warn: #d4a84b;
-  --ok: #6fba8f;
+  --ok: #308f38;
+  /* Progress fills — brighter so they read against the white outline */
+  --progress-ok: #5ee06a;
+  --progress-warn: #f5cc55;
+  --progress-danger: #ff7a7a;
 
-  --banner-from: rgba(110, 196, 196, 0.16);
-  --banner-to: rgba(169, 155, 196, 0.16);
-  --glow: rgba(110, 196, 196, 0.5);
-  --glow-2: rgba(169, 155, 196, 0.4);
+  --banner-from: rgba(62, 152, 152, 0.16);
+  --banner-to: rgba(126, 105, 167, 0.16);
+  /* Match selected district card glow — lavender in dark */
+  --glow: rgba(126, 105, 167, 0.7);
+  --glow-2: rgba(62, 152, 152, 0.4);
 }
 
 @theme {
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
   --color-bg: var(--bg);
+  --color-chrome: var(--chrome);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-ink: var(--ink);
@@ -71,6 +89,7 @@
   --color-border: var(--border);
   --color-plum: var(--plum);
   --color-lavender: var(--lavender);
+  --color-lavender-deep: var(--lavender-deep);
   --color-teal: var(--teal);
   --color-teal-deep: var(--teal-deep);
   --color-accent: var(--accent);
@@ -83,9 +102,55 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--bg);
+  font-weight: 400;
+  background: var(--chrome);
   color: var(--ink);
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
+}
+
+.dark body {
+  font-weight: 400;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+.dark .font-serif {
+  font-weight: 600;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Native select / option — white+black (light) / black+white (dark) */
+select.themed-select,
+select {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  color-scheme: light;
+}
+
+.dark select.themed-select,
+.dark select {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  color-scheme: dark;
+}
+
+select.themed-select option,
+select option {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.dark select.themed-select option,
+.dark select option {
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 
 .leaflet-container {
@@ -121,4 +186,346 @@ body {
   position: absolute;
   inset: 0;
   border-radius: inherit;
+}
+
+/* Lamp tooltip enter/exit — 21st fanoflix/lamp-tooltip */
+@keyframes lamp-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes lamp-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* Urgent band labels — Elevated / Below-* attention pulse (cards / strip) */
+@keyframes alert-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.72;
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes alert-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--danger) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--danger) 28%, transparent);
+  }
+}
+
+/* Compare-matrix cell: red glow from edges → clear center (spotlight vignette), auto-pulse */
+@keyframes alert-edge-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.alert-pulse {
+  color: var(--danger) !important;
+  animation: alert-pulse 1.35s ease-in-out infinite;
+}
+
+.alert-pulse-ring {
+  animation: alert-ring 1.35s ease-in-out infinite;
+  border-color: color-mix(in oklab, var(--danger) 55%, var(--border)) !important;
+}
+
+.alert-edge-glow {
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 32%,
+    color-mix(in oklab, #ff2b2b 12%, transparent) 52%,
+    color-mix(in oklab, #ff1f1f 42%, transparent) 78%,
+    color-mix(in oklab, #ff0a0a 78%, transparent) 100%
+  );
+  box-shadow:
+    inset 0 0 0 1.5px color-mix(in oklab, #ff3030 70%, transparent),
+    inset 0 0 18px 2px color-mix(in oklab, #ff1a1a 35%, transparent);
+  animation: alert-edge-glow 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-pulse,
+  .alert-pulse-ring,
+  .alert-edge-glow {
+    animation: none;
+  }
+
+  .alert-edge-glow {
+    opacity: 0.85;
+  }
+}
+
+/**
+ * Panel edge — matches district card (GlowCard solid):
+ * light: 2px #000 · dark: 2px rgba(255,255,255,0.4)
+ *
+ * Plastic depth:
+ * - Pills (navbar) keep a compact oval sheen — curvature carries the 3D.
+ * - Rectangular cards use a full-width top wash + stronger bevel/lift so
+ *   flat faces still read as raised plastic (same material, different geometry).
+ */
+:root {
+  /* Navbar / pill inset ring */
+  --plastic-pill-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.28), inset 0 -2px 6px rgba(0, 0, 0, 0.12);
+
+  /* Rectangular solid cards — lift + bevel tuned for flat faces */
+  --plastic-rect-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.38),
+    inset 0 8px 14px rgba(255, 255, 255, 0.12), inset 0 -4px 10px rgba(0, 0, 0, 0.2),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.12);
+
+  --plastic-inset: var(--plastic-rect-shadow);
+  --panel-edge: #000000;
+  --plastic-border: var(--panel-edge);
+}
+
+.dark {
+  --plastic-pill-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 6px rgba(0, 0, 0, 0.22);
+
+  --plastic-rect-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 5px 16px rgba(0, 0, 0, 0.32),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 2px 0 rgba(255, 255, 255, 0.24),
+    inset 0 8px 14px rgba(255, 255, 255, 0.07), inset 0 -4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 -1.5px 0 rgba(0, 0, 0, 0.22);
+
+  --plastic-inset: var(--plastic-rect-shadow);
+  --panel-edge: rgba(255, 255, 255, 0.4);
+  --plastic-border: var(--panel-edge);
+}
+
+.panel-edge {
+  border: 2px solid var(--panel-edge);
+}
+
+.solid-panel,
+.chooser-panel,
+.plastic-tab {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--panel-edge);
+  box-shadow: var(--plastic-rect-shadow);
+}
+
+/* Depth only — no position. Use on absolutely positioned faces (ranking flip). */
+.plastic-depth {
+  overflow: hidden;
+  border: 2px solid var(--panel-edge);
+  box-shadow: var(--plastic-rect-shadow);
+}
+
+/* Full-width top wash — follows card radius (not pill oval) */
+.solid-panel::before,
+.chooser-panel::before,
+.plastic-tab::before,
+.plastic-depth::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 45%;
+  border-radius: inherit;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.14) 42%,
+    transparent 100%
+  );
+}
+
+.dark .solid-panel::before,
+.dark .chooser-panel::before,
+.dark .plastic-tab::before,
+.dark .plastic-depth::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0.07) 42%,
+    transparent 100%
+  );
+}
+
+/* Pill-shaped solids (status chips) — oval sheen like navbar buttons */
+.solid-panel.plastic-pill {
+  box-shadow: var(--plastic-pill-inset);
+}
+
+.solid-panel.plastic-pill::before {
+  right: auto;
+  left: 50%;
+  width: 78%;
+  height: 40%;
+  transform: translateX(-50%);
+  border-radius: 9999px 9999px 40% 40%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  filter: blur(1.5px);
+}
+
+.dark .solid-panel.plastic-pill::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  filter: blur(1.5px);
+}
+
+/**
+ * Solid decision / status panels.
+ */
+.solid-panel {
+  --solid-fill: var(--ok);
+  background: var(--solid-fill);
+}
+
+/**
+ * Teal / lavender chooser cards (top bar selects).
+ * Hover / open match navbar Environment·Table (RippleButton).
+ */
+.chooser-panel {
+  --chooser-fill: var(--teal);
+  background: var(--chooser-fill);
+  color: #ffffff;
+  transition:
+    box-shadow 200ms ease,
+    background-color 200ms ease;
+}
+
+.dark .chooser-panel {
+  --chooser-fill: var(--lavender);
+  color: #000000;
+}
+
+/* Hover glow — same as RippleButton idle→hover */
+.chooser-panel:hover:not(.chooser-panel-open) {
+  box-shadow:
+    0 0 18px 6px color-mix(in oklab, var(--teal) 55%, transparent),
+    0 0 4px 1px color-mix(in oklab, var(--teal) 80%, transparent),
+    var(--plastic-rect-shadow);
+}
+
+.dark .chooser-panel:hover:not(.chooser-panel-open) {
+  box-shadow:
+    0 0 18px 6px color-mix(in oklab, var(--lavender) 55%, transparent),
+    0 0 4px 1px color-mix(in oklab, var(--lavender) 80%, transparent),
+    var(--plastic-rect-shadow);
+}
+
+/* Open / menu visible — same as RippleButton toggled on (deep fill + glow) */
+.chooser-panel.chooser-panel-open {
+  --chooser-fill: var(--teal-deep);
+  background: var(--teal-deep);
+  box-shadow:
+    0 0 20px 7px color-mix(in oklab, var(--teal) 60%, transparent),
+    inset 0 3px 8px rgba(0, 0, 0, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12),
+    var(--plastic-rect-shadow);
+}
+
+.dark .chooser-panel.chooser-panel-open {
+  --chooser-fill: var(--lavender-deep);
+  background: var(--lavender-deep);
+  box-shadow:
+    0 0 20px 7px color-mix(in oklab, var(--lavender) 65%, transparent),
+    inset 0 3px 8px rgba(0, 0, 0, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15),
+    var(--plastic-rect-shadow);
+}
+
+.solid-panel-ok {
+  --solid-fill: var(--ok);
+}
+
+.solid-panel-warn {
+  --solid-fill: var(--warn);
+}
+
+.solid-panel-danger {
+  --solid-fill: var(--danger);
+  overflow: visible;
+  animation: solid-danger-pulse 1.45s ease-in-out infinite;
+}
+
+.solid-panel-danger.solid-panel-danger-idle {
+  overflow: hidden;
+  animation: none;
+  background: var(--danger);
+}
+
+.solid-panel-neutral {
+  --solid-fill: var(--surface-2);
+}
+
+/**
+ * Danger solid cards: fill gradient pulse + red glow; keep rect plastic depth.
+ */
+@keyframes solid-danger-pulse {
+  0%,
+  100% {
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklab, #c43a4a 35%, var(--danger)) 0%,
+      var(--danger) 45%,
+      color-mix(in oklab, #8a3040 25%, var(--danger)) 100%
+    );
+    box-shadow:
+      0 0 0 0 color-mix(in oklab, #ff1a1a 0%, transparent),
+      var(--plastic-rect-shadow);
+  }
+  50% {
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklab, #ff4a5a 55%, var(--danger)) 0%,
+      color-mix(in oklab, #ff2a3a 40%, var(--danger)) 50%,
+      color-mix(in oklab, #d02030 30%, var(--danger)) 100%
+    );
+    box-shadow:
+      0 0 22px 8px color-mix(in oklab, #ff1f1f 55%, transparent),
+      0 0 10px 3px color-mix(in oklab, #ff4040 40%, transparent),
+      var(--plastic-rect-shadow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solid-panel-danger {
+    animation: none;
+    background: var(--danger);
+  }
 }

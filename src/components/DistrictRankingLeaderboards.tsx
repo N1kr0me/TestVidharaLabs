@@ -16,7 +16,7 @@ const METRICS: MetricDef[] = [
   {
     key: 'disease',
     title: 'Disease',
-    hint: '#1 = lowest risk',
+    hint: 'ESI = Environmental Suitability Index · #1 = lowest risk',
     valueOf: (r) => r.prediction.diseaseEsi,
     valueLabelOf: (r) => `ESI ${r.prediction.diseaseEsi.toFixed(0)}`,
     bylineOf: (r) =>

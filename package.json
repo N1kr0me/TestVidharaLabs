@@ -1,5 +1,5 @@
 {
-  "name": "vidhara-full-product-mockup",
+  "name": "vidhara-v5",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.3.3",
+    "@radix-ui/react-tooltip": "^1.2.16",
+    "@remixicon/react": "^4.9.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.43.0",
     "leaflet": "^1.9.4",

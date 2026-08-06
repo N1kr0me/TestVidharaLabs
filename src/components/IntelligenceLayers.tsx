@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react'
 import { FeaturesTable } from '@/components/ui/FeaturesTable'
 import { RankBadge } from '@/components/ui/RankBadge'
+import {
+  RISK_BAND_LEGEND,
+  QUALITY_BAND_LEGEND,
+} from '@/components/ui/BandLegend'
 import { StatisticsCards, type StatCard } from '@/components/ui/StatisticsCards'
 import { LayerCard } from '@/layers/LayerCard'
 import { INTELLIGENCE_LAYERS } from '@/layers/types'
@@ -27,10 +31,18 @@ type Props = {
 function toneForBand(band: string): StatCard['tone'] {
   const b = band.toLowerCase()
   if (b.includes('elevated') || b.includes('below')) return 'danger'
-  if (b.includes('watch') || b.includes('normal')) return 'warn'
-  if (b.includes('above') || b.includes('low')) return 'ok'
+  if (b === 'watch' || b === 'normal') return 'warn'
+  if (b.includes('above') || b === 'low') return 'ok'
   return 'neutral'
 }
+
+/** Footnote when ESI scores appear on a score card. */
+const ESI_FOOTER = (
+  <p className="text-[10px] leading-snug text-muted">
+    <span className="font-semibold text-ink">ESI</span> = Environmental
+    Suitability Index
+  </p>
+)
 
 export function IntelligenceLayers({
   role,
@@ -61,10 +73,11 @@ export function IntelligenceLayers({
       value: p.diseaseBand,
       tone: toneForBand(p.diseaseBand),
       status: p.diseaseBand,
-      evidence: 'Established',
       rank: ranks?.disease,
       rankOf: total,
       description: `Anthracnose ESI ${p.anthracnoseEsi.toFixed(0)} · Wilt ${p.wiltEsi.toFixed(0)} · Leaf curl ${p.leafCurlEsi.toFixed(0)}.${showRanks ? ' Rank #1 = lowest disease pressure.' : ''}`,
+      bandLegend: RISK_BAND_LEGEND,
+      footer: ESI_FOOTER,
     },
     {
       title: 'Quality potential',
@@ -72,11 +85,11 @@ export function IntelligenceLayers({
       value: p.qualityBand,
       tone: toneForBand(p.qualityBand),
       status: p.qualityBand,
-      evidence: 'Assumption',
       rank: ranks?.quality,
       rankOf: total,
       description:
         'Colour / pungency / oleoresin conduciveness vs usual season — not a lab assay.',
+      bandLegend: QUALITY_BAND_LEGEND,
     },
   ]
 
@@ -87,7 +100,6 @@ export function IntelligenceLayers({
       value: String(selectedCompliance.score),
       tone: 'ok',
       status: p.contaminationBand,
-      evidence: 'Assumption',
       rank: ranks?.complianceBest,
       rankOf: total,
       headerSlot: (
@@ -105,6 +117,7 @@ export function IntelligenceLayers({
         </select>
       ),
       description: `${market} readiness from contamination / aflatoxin pressure (ESI ${p.aflatoxinEsi.toFixed(0)}). Stricter markets score lower for the same pressure.`,
+      footer: ESI_FOOTER,
     },
     {
       title: 'Contamination potential',
@@ -112,11 +125,11 @@ export function IntelligenceLayers({
       value: p.contaminationBand,
       tone: toneForBand(p.contaminationBand),
       status: p.contaminationBand,
-      evidence: 'Expert judgement',
       rank: ranks?.contamination,
       rankOf: total,
-      description:
-        'Pre-harvest environmental pressure only — drying/storage after harvest not observed.',
+      description: `Pre-harvest environmental pressure only (aflatoxin ESI ${p.aflatoxinEsi.toFixed(0)}) — drying/storage after harvest not observed.`,
+      bandLegend: RISK_BAND_LEGEND,
+      footer: ESI_FOOTER,
     },
   ]
 
@@ -126,7 +139,6 @@ export function IntelligenceLayers({
       subtitle: 'Biomass × quality proxy',
       value: String(p.compoundYieldIndex),
       tone: 'neutral',
-      evidence: 'Assumption',
       rank: ranks?.compoundYield,
       rankOf: total,
       description:
@@ -140,7 +152,6 @@ export function IntelligenceLayers({
       subtitle: 'Regional risk proxy',
       value: String(p.sourcingProxyIndex),
       tone: 'ok',
-      evidence: 'Data gap',
       rank: ranks?.sourcing,
       rankOf: total,
       description:

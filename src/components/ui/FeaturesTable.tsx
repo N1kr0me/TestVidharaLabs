@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { StatusBadge } from '@/components/ui/StatusBadge'
+import { StatusChip } from '@/components/ui/StatusChip'
 import type { FeatureRow } from '@/lib/features'
 import { GlowCard } from './GlowCard'
 
@@ -8,13 +8,21 @@ type Props = {
   caption?: string
   loading?: boolean
   className?: string
+  /** Dense embed without outer GlowCard (e.g. overlay tray) */
+  bare?: boolean
 }
 
 /** Features table inside glowing-effect card */
-export function FeaturesTable({ rows, caption, loading, className }: Props) {
-  return (
-    <GlowCard className={className} bodyClassName="min-h-0">
-      <div className="mb-3 flex items-center justify-between">
+export function FeaturesTable({
+  rows,
+  caption,
+  loading,
+  className,
+  bare = false,
+}: Props) {
+  const body = (
+    <>
+      <div className="mb-2 flex items-center justify-between">
         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
           Environmental features
         </p>
@@ -31,12 +39,12 @@ export function FeaturesTable({ rows, caption, loading, className }: Props) {
                 transition={{ delay: i * 0.03, duration: 0.25 }}
                 className="border-b border-border/70 transition-colors hover:bg-bg/80"
               >
-                <td className="py-1.5 pr-2 text-muted">{row.label}</td>
-                <td className="py-1.5 text-right font-medium tabular-nums text-ink">
+                <td className="py-1 pr-2 text-xs text-muted">{row.label}</td>
+                <td className="py-1 text-right text-xs font-medium tabular-nums text-ink">
                   {row.value}
                 </td>
-                <td className="py-1.5 pl-3 text-right">
-                  <StatusBadge label={row.watch} />
+                <td className="py-1 pl-2 text-right">
+                  <StatusChip label={row.watch} />
                 </td>
               </motion.tr>
             ))}
@@ -46,6 +54,16 @@ export function FeaturesTable({ rows, caption, loading, className }: Props) {
       {caption ? (
         <p className="mt-2 text-[10px] text-muted">{caption}</p>
       ) : null}
+    </>
+  )
+
+  if (bare) {
+    return <div className={className}>{body}</div>
+  }
+
+  return (
+    <GlowCard className={className} bodyClassName="min-h-0">
+      {body}
     </GlowCard>
   )
 }

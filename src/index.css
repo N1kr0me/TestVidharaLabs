@@ -297,35 +297,44 @@ select option {
   --plastic-pill-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.22),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.28), inset 0 -2px 6px rgba(0, 0, 0, 0.12);
 
-  /* Rectangular solid cards — lift + bevel tuned for flat faces */
-  --plastic-rect-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.14),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.38),
-    inset 0 8px 14px rgba(255, 255, 255, 0.12), inset 0 -4px 10px rgba(0, 0, 0, 0.2),
-    inset 0 -1.5px 0 rgba(0, 0, 0, 0.12);
+  /* Soft lift + bevel — 21st item-card volume on flat faces */
+  --plastic-rect-shadow: 0 10px 28px -8px color-mix(in oklab, var(--item-fill, #cabca6) 32%, transparent),
+    0 4px 12px -2px color-mix(in oklab, var(--item-fill, #cabca6) 22%, transparent),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28), inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.16);
 
   --plastic-inset: var(--plastic-rect-shadow);
   --panel-edge: #000000;
   --plastic-border: var(--panel-edge);
+
+  /* Idle chrome fill for meta / untinted plastic */
+  --plastic-idle-fill: #cabca6;
 }
 
 .dark {
   --plastic-pill-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.18),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 6px rgba(0, 0, 0, 0.22);
 
-  --plastic-rect-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 5px 16px rgba(0, 0, 0, 0.32),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 2px 0 rgba(255, 255, 255, 0.24),
-    inset 0 8px 14px rgba(255, 255, 255, 0.07), inset 0 -4px 12px rgba(0, 0, 0, 0.4),
-    inset 0 -1.5px 0 rgba(0, 0, 0, 0.22);
+  --plastic-rect-shadow: 0 12px 32px -8px color-mix(in oklab, var(--item-fill, #474747) 45%, transparent),
+    0 5px 14px -2px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.35);
 
   --plastic-inset: var(--plastic-rect-shadow);
   --panel-edge: rgba(255, 255, 255, 0.4);
   --plastic-border: var(--panel-edge);
+  --plastic-idle-fill: #474747;
 }
 
 .panel-edge {
   border: 2px solid var(--panel-edge);
 }
 
+/**
+ * Branded plastic group — look from 21st ravikatiyar162/item-card:
+ * soft diagonal fill, tinted ambient shadow, top-left bloom orb.
+ * Hues stay on each surface’s existing --item-fill / --solid-fill / --chooser-fill.
+ */
 .solid-panel,
 .chooser-panel,
 .plastic-tab {
@@ -340,9 +349,58 @@ select option {
   overflow: hidden;
   border: 2px solid var(--panel-edge);
   box-shadow: var(--plastic-rect-shadow);
+  --item-fill: var(--plastic-idle-fill);
 }
 
-/* Full-width top wash — follows card radius (not pill oval) */
+.solid-panel {
+  --item-fill: var(--solid-fill, var(--ok));
+}
+
+.chooser-panel {
+  --item-fill: var(--chooser-fill, var(--teal));
+}
+
+.plastic-tab {
+  --item-fill: var(--plastic-idle-fill);
+}
+
+/* Soft diagonal fill — item-card volume, same hue */
+.solid-panel,
+.chooser-panel {
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--item-fill) 88%, white) 0%,
+    var(--item-fill) 48%,
+    color-mix(in oklab, var(--item-fill) 78%, black) 100%
+  );
+}
+
+/* Soft white bloom (item-card) */
+.solid-panel::after,
+.chooser-panel::after,
+.plastic-tab::after,
+.plastic-depth::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  z-index: 15;
+  top: -30%;
+  left: -18%;
+  width: 70%;
+  height: 70%;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.14);
+  filter: blur(36px);
+}
+
+.dark .solid-panel::after,
+.dark .chooser-panel::after,
+.dark .plastic-tab::after,
+.dark .plastic-depth::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Full-width top wash — follows card radius */
 .solid-panel::before,
 .chooser-panel::before,
 .plastic-tab::before,
@@ -360,8 +418,8 @@ select option {
   border-bottom-right-radius: 0;
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(255, 255, 255, 0.14) 42%,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(255, 255, 255, 0.12) 42%,
     transparent 100%
   );
 }
@@ -372,15 +430,17 @@ select option {
 .dark .plastic-depth::before {
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.24) 0%,
-    rgba(255, 255, 255, 0.07) 42%,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.06) 42%,
     transparent 100%
   );
 }
 
-/* Pill-shaped solids (status chips) — oval sheen like navbar buttons */
+/* Pill-shaped solids (status chips) — oval sheen + tinted ambient */
 .solid-panel.plastic-pill {
-  box-shadow: var(--plastic-pill-inset);
+  box-shadow:
+    0 8px 22px -6px color-mix(in oklab, var(--item-fill, var(--solid-fill)) 40%, transparent),
+    var(--plastic-pill-inset);
 }
 
 .solid-panel.plastic-pill::before {
@@ -408,11 +468,22 @@ select option {
 }
 
 /**
- * Solid decision / status panels.
+ * Solid decision / status panels — hue via --solid-fill; volume via item-card gradient.
  */
 .solid-panel {
   --solid-fill: var(--ok);
-  background: var(--solid-fill);
+}
+
+/**
+ * Layer 6 · Decision + Final decision — fixed brand solids (not ok/warn/danger).
+ * Light: #5D4680 · Dark: #6FCDB4
+ */
+.solid-panel-l6 {
+  --solid-fill: #5d4680;
+}
+
+.dark .solid-panel-l6 {
+  --solid-fill: #6fcdb4;
 }
 
 /**
@@ -421,11 +492,10 @@ select option {
  */
 .chooser-panel {
   --chooser-fill: var(--teal);
-  background: var(--chooser-fill);
   color: #ffffff;
   transition:
     box-shadow 200ms ease,
-    background-color 200ms ease;
+    background 200ms ease;
 }
 
 .dark .chooser-panel {
@@ -451,7 +521,6 @@ select option {
 /* Open / menu visible — same as RippleButton toggled on (deep fill + glow) */
 .chooser-panel.chooser-panel-open {
   --chooser-fill: var(--teal-deep);
-  background: var(--teal-deep);
   box-shadow:
     0 0 20px 7px color-mix(in oklab, var(--teal) 60%, transparent),
     inset 0 3px 8px rgba(0, 0, 0, 0.28),
@@ -461,7 +530,6 @@ select option {
 
 .dark .chooser-panel.chooser-panel-open {
   --chooser-fill: var(--lavender-deep);
-  background: var(--lavender-deep);
   box-shadow:
     0 0 20px 7px color-mix(in oklab, var(--lavender) 65%, transparent),
     inset 0 3px 8px rgba(0, 0, 0, 0.35),
@@ -486,7 +554,6 @@ select option {
 .solid-panel-danger.solid-panel-danger-idle {
   overflow: hidden;
   animation: none;
-  background: var(--danger);
 }
 
 .solid-panel-neutral {
@@ -526,6 +593,5 @@ select option {
 @media (prefers-reduced-motion: reduce) {
   .solid-panel-danger {
     animation: none;
-    background: var(--danger);
   }
 }

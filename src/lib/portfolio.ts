@@ -60,6 +60,8 @@ export function districtStatus(insight: DistrictInsight): DistrictStatus {
     decisions.some(
       (d) =>
         d.tone === 'warn' ||
+        d.label === 'Monitor' ||
+        d.label.toLowerCase().includes('monitor') ||
         d.label === 'Watch' ||
         d.label.toLowerCase().includes('watch'),
     )

@@ -2,7 +2,6 @@ import * as React from 'react'
 import { RiCheckLine, RiCloseLine, RiSparkling2Line } from '@remixicon/react'
 import { Badge } from '@/components/ui/badge'
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -196,11 +195,17 @@ export function DistrictComparisonTable({
         </p>
       </div>
 
+      {/* Single scrollport so sticky Decision column works (no nested overflow). */}
       <div className="relative overflow-x-auto rounded-xl border border-border">
-        <Table className="min-w-[640px] table-fixed text-sm">
+        <table className="w-full min-w-[640px] table-fixed caption-bottom text-sm">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="sticky left-0 z-20 w-[28%] border-b border-border bg-surface">
+              <TableHead
+                className={cn(
+                  'sticky left-0 z-30 w-[28%] border-b border-r border-border',
+                  'bg-surface shadow-[4px_0_12px_-4px_rgba(0,0,0,0.35)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.65)]',
+                )}
+              >
                 <span className="text-xs font-semibold uppercase tracking-wide text-muted">
                   Decision
                 </span>
@@ -211,7 +216,7 @@ export function DistrictComparisonTable({
                   <TableHead
                     key={ins.prediction.district.id}
                     className={cn(
-                      'border-b border-border text-center',
+                      'relative z-0 border-b border-border text-center',
                       highlighted ? 'bg-teal/10' : 'bg-surface',
                     )}
                   >
@@ -236,34 +241,49 @@ export function DistrictComparisonTable({
           <TableBody>
             {groups.map((group) => (
               <React.Fragment key={group.section}>
-                <TableRow className="bg-surface-2/80 hover:bg-surface-2/80">
+                <TableRow className="bg-surface-2 hover:bg-surface-2">
                   <TableCell
-                    colSpan={insights.length + 1}
-                    className="py-2 text-xs font-semibold uppercase tracking-wide text-ink"
+                    className={cn(
+                      'sticky left-0 z-20 border-r border-border py-2 text-xs font-semibold uppercase tracking-wide text-ink',
+                      'bg-surface-2 shadow-[4px_0_12px_-4px_rgba(0,0,0,0.35)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.65)]',
+                    )}
                   >
                     {group.section}
                   </TableCell>
+                  <TableCell
+                    colSpan={insights.length}
+                    className="relative z-0 bg-surface-2 py-2"
+                    aria-hidden
+                  />
                 </TableRow>
                 {group.features.map((feature) => (
-                  <TableRow key={`${group.section}-${feature.label}`}>
-                    <TableCell className="sticky left-0 z-10 bg-surface py-2 font-medium text-ink">
+                  <TableRow
+                    key={`${group.section}-${feature.label}`}
+                    className="group"
+                  >
+                    <TableCell
+                      className={cn(
+                        'sticky left-0 z-20 border-r border-border py-2 font-medium text-ink',
+                        'bg-surface group-hover:bg-surface-2',
+                        'shadow-[4px_0_12px_-4px_rgba(0,0,0,0.35)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.65)]',
+                      )}
+                    >
                       {feature.label}
                     </TableCell>
                     {feature.values.map((value, i) => {
                       const urgent =
-                        typeof value === 'string' &&
-                        isUrgentBandLabel(value)
+                        typeof value === 'string' && isUrgentBandLabel(value)
                       return (
                         <TableCell
                           key={`${feature.label}-${insights[i].prediction.district.id}`}
                           className={cn(
-                            'relative overflow-hidden py-2 text-center',
+                            'relative z-0 overflow-hidden py-2 text-center',
                             i === focusIndex && !urgent && 'bg-teal/5',
                           )}
                         >
                           {urgent ? (
                             <span
-                              className="alert-edge-glow absolute inset-0"
+                              className="alert-edge-glow absolute inset-0 z-0"
                               aria-hidden
                             />
                           ) : null}
@@ -279,7 +299,7 @@ export function DistrictComparisonTable({
               </React.Fragment>
             ))}
           </TableBody>
-        </Table>
+        </table>
       </div>
     </section>
   )

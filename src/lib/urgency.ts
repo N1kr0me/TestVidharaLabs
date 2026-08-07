@@ -2,11 +2,13 @@ import type { DecisionResult } from '@/lib/decisions'
 import type { DistrictInsight } from '@/lib/productEngine'
 
 /**
- * Urgent band labels that should pulse red (Elevated risk or low quality/history).
+ * Urgent band labels that should pulse red (Alert / Act / legacy Elevated / Below-*).
  */
 export function isUrgentBandLabel(label: string): boolean {
   const l = label.toLowerCase().trim()
   return (
+    l === 'alert' ||
+    l === 'act' ||
     l === 'elevated' ||
     l === 'below-normal' ||
     l === 'below-average' ||

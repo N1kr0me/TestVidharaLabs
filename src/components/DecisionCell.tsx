@@ -10,15 +10,21 @@ import type { DecisionResult } from '@/lib/decisions'
 
 /** Highlight urgent band words in hover reason lines. */
 function ReasonLine({ text }: { text: string }) {
-  const parts = text.split(/\b(Elevated|Below-normal|Below-average)\b/g)
+  const parts = text.split(/\b(Elevated|Below-normal|Below-average|Alert|Act|Monitor)\b/g)
   if (parts.length === 1) return <>{text}</>
   return (
     <>
       {parts.map((part, i) =>
         part === 'Elevated' ||
         part === 'Below-normal' ||
-        part === 'Below-average' ? (
+        part === 'Below-average' ||
+        part === 'Alert' ||
+        part === 'Act' ? (
           <span key={`${part}-${i}`} className="font-medium text-danger">
+            {part}
+          </span>
+        ) : part === 'Monitor' ? (
+          <span key={`${part}-${i}`} className="font-medium text-warn">
             {part}
           </span>
         ) : (
@@ -99,7 +105,7 @@ export function DecisionCell({
         <TooltipTrigger asChild>
           <div
             className={cn(
-              'relative box-border flex h-full w-full min-h-0 min-w-0 cursor-help flex-col rounded-lg px-1.5 py-1 text-left outline-none',
+              'relative box-border flex h-full w-full min-h-0 min-w-0 cursor-help flex-col rounded-2xl px-1.5 py-1 text-left outline-none',
               tone === 'danger' ? 'overflow-visible' : 'overflow-hidden',
               SOLID_PANEL[tone],
               emphasis && 'col-span-2 row-span-2',

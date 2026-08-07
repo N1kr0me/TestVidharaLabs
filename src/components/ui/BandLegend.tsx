@@ -15,18 +15,18 @@ const TONE: Record<BandLegendItem['tone'], string> = {
   neutral: 'bg-lavender/15 text-plum ring-lavender/25',
 }
 
-/** Disease / contamination three-band scale (Unified Strategy). */
+/** Disease / contamination three-band scale (decision posture). */
 export const RISK_BAND_LEGEND: BandLegendItem[] = [
-  { label: 'Low', tone: 'ok', meaning: 'lower pressure' },
-  { label: 'Watch', tone: 'warn', meaning: 'elevating conditions' },
-  { label: 'Elevated', tone: 'danger', meaning: 'higher pressure' },
+  { label: 'Stable', tone: 'ok', meaning: 'lower pressure (low)' },
+  { label: 'Monitor', tone: 'warn', meaning: 'elevating conditions (medium)' },
+  { label: 'Alert', tone: 'danger', meaning: 'higher pressure (high)' },
 ]
 
-/** Quality three-band scale (Unified Strategy). */
+/** Quality three-band scale (decision posture). */
 export const QUALITY_BAND_LEGEND: BandLegendItem[] = [
-  { label: 'Below-normal', tone: 'danger', meaning: 'weaker vs usual' },
-  { label: 'Normal', tone: 'warn', meaning: 'in-season typical' },
-  { label: 'Above-normal', tone: 'ok', meaning: 'stronger vs usual' },
+  { label: 'Act', tone: 'danger', meaning: 'below-normal — take action' },
+  { label: 'Monitor', tone: 'warn', meaning: 'in-season typical' },
+  { label: 'Stable', tone: 'ok', meaning: 'above-normal lean' },
 ]
 
 type Props = {

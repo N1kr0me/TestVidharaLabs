@@ -300,25 +300,18 @@ export function DistrictBentoCard({
           <TooltipTrigger asChild>
             <div
               className={cn(
-                'relative mt-1.5 shrink-0 cursor-help rounded-lg px-2.5 py-2 outline-none',
+                'relative mt-1.5 shrink-0 cursor-help rounded-2xl px-2.5 py-2 outline-none',
                 l6.decision.tone === 'danger'
                   ? 'overflow-visible'
                   : 'overflow-hidden',
-                l6.decision.tone === 'ok' && 'solid-panel solid-panel-ok',
-                l6.decision.tone === 'warn' && 'solid-panel solid-panel-warn',
-                l6.decision.tone === 'danger' &&
-                  'solid-panel solid-panel-danger',
-                l6.decision.tone === 'neutral' &&
-                  'solid-panel solid-panel-neutral',
+                'solid-panel solid-panel-l6',
               )}
             >
               {/* Depth / sheen from .solid-panel (matches navbar buttons) */}
               <p
                 className={cn(
                   'relative z-10 text-center text-[12px] font-bold uppercase tracking-wider',
-                  l6.decision.tone === 'neutral'
-                    ? 'text-ink'
-                    : 'text-[#fffef8] dark:text-[#0a0a0a]',
+                  'text-[#fffef8] dark:text-[#0a0a0a]',
                 )}
               >
                 Decision
@@ -326,9 +319,7 @@ export function DistrictBentoCard({
               <p
                 className={cn(
                   'relative z-10 mt-0.5 text-center font-serif text-base font-semibold leading-snug',
-                  l6.decision.tone === 'neutral'
-                    ? 'text-ink'
-                    : 'text-[#fffef8] dark:text-[#0a0a0a]',
+                  'text-[#fffef8] dark:text-[#0a0a0a]',
                 )}
               >
                 {l6.decision.label}
@@ -336,9 +327,7 @@ export function DistrictBentoCard({
               <p
                 className={cn(
                   'relative z-10 mt-0.5 break-words text-left text-xs leading-snug [overflow-wrap:anywhere]',
-                  l6.decision.tone === 'neutral'
-                    ? 'text-ink/90'
-                    : 'text-[#fffef8]/90 dark:text-[#0a0a0a]/90',
+                  'text-[#fffef8]/90 dark:text-[#0a0a0a]/90',
                 )}
               >
                 {l6.decision.action}

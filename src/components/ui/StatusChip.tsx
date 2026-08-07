@@ -11,14 +11,16 @@ function toneFromLabel(label: string): 'danger' | 'warn' | 'ok' | 'neutral' {
   const l = label.toLowerCase()
   if (
     l.includes('alert') ||
+    l.includes('act') ||
     l.includes('elevated') ||
     l.includes('below') ||
     l.includes('high')
   ) {
     return 'danger'
   }
-  if (l.includes('watch')) return 'warn'
+  if (l.includes('monitor') || l.includes('watch')) return 'warn'
   if (
+    l.includes('stable') ||
     l.includes('normal') ||
     l.includes('low') ||
     l.includes('above') ||

@@ -8,6 +8,9 @@ export type YieldBand = 'Below-normal' | 'Normal' | 'Above-normal'
 export type DecisionTone = 'ok' | 'warn' | 'danger' | 'neutral'
 export type HistoryTrendBand = 'Below-average' | 'Near-average' | 'Above-average'
 
+/** Display posture on Decision cards — Low / Medium / High → Stable / Monitor / Act|Alert */
+export type DecisionPosture = 'Stable' | 'Monitor' | 'Act' | 'Alert'
+
 export type DecisionResult = {
   /** Band or short decision shown as primary value */
   label: string
@@ -22,6 +25,29 @@ export type DecisionResult = {
    * Why this band — ESI/score + main driving features.
    */
   reasoning: string
+}
+
+/** Risk Low → Stable · Watch → Monitor · Elevated → Alert */
+export function riskPostureLabel(band: RiskBand): DecisionPosture {
+  if (band === 'Elevated') return 'Alert'
+  if (band === 'Watch') return 'Monitor'
+  return 'Stable'
+}
+
+/** Quality / yield: Above → Stable · Normal → Monitor · Below → Act */
+export function qualityPostureLabel(
+  band: QualityBand | YieldBand,
+): DecisionPosture {
+  if (band === 'Below-normal') return 'Act'
+  if (band === 'Above-normal') return 'Stable'
+  return 'Monitor'
+}
+
+/** History: Above → Stable · Near → Monitor · Below → Act */
+export function historyPostureLabel(band: HistoryTrendBand): DecisionPosture {
+  if (band === 'Below-average') return 'Act'
+  if (band === 'Above-average') return 'Stable'
+  return 'Monitor'
 }
 
 export function yieldBandFromIndex(index: number): YieldBand {
@@ -54,8 +80,9 @@ export function pathwayDecision(
   band: RiskBand,
   reasoning: string,
 ): DecisionResult {
+  const label = riskPostureLabel(band)
   return {
-    label: band,
+    label,
     band,
     tone: riskTone(band),
     action:
@@ -73,8 +100,9 @@ export function qualityPathwayDecision(
   band: QualityBand,
   reasoning: string,
 ): DecisionResult {
+  const label = qualityPostureLabel(band)
   return {
-    label: band,
+    label,
     band,
     tone: qualityTone(band),
     action:
@@ -116,7 +144,7 @@ export function plantDiseasePotentialDecision(
         : 'Read as lower disease potential for this window — routine monitoring is enough.'
 
   return {
-    label: diseaseBand,
+    label: riskPostureLabel(diseaseBand),
     band: diseaseBand,
     tone: riskTone(diseaseBand),
     action,
@@ -192,7 +220,7 @@ export function qualityDecisionForCompany(
   }
 
   return {
-    label: band,
+    label: qualityPostureLabel(band),
     band,
     tone: qualityTone(band),
     action:
@@ -250,7 +278,7 @@ export function contaminationPotentialDecision(
   else if (adjusted >= 0.45) band = 'Watch'
 
   return {
-    label: band,
+    label: riskPostureLabel(band),
     band,
     tone: riskTone(band),
     action:
@@ -336,15 +364,15 @@ export function complianceDecisionMock(
   const w = weightOf(company, 'compliance')
   const risk = (p * 1.1 + a * 1.2 + h * 0.8 + c) * (0.6 + 0.4 * (w / 3))
 
-  let label = 'Likely clear'
+  let label: DecisionPosture = 'Stable'
   let tone: DecisionTone = 'ok'
   let action = `Read as likely clear for ${market}: residue / mycotoxin pressure looks manageable against mock destination limits.`
   if (risk >= 2.4) {
-    label = 'MRL caution'
+    label = 'Alert'
     tone = 'danger'
     action = `Read as MRL caution for ${market}: contamination-linked residue pressure is elevated — do not treat as cleared.`
   } else if (risk >= 1.1) {
-    label = 'Verify MRL'
+    label = 'Monitor'
     tone = 'warn'
     action = `Read as verify-MRL for ${market}: check pesticide, aflatoxin and heavy metal against destination limits before shipping.`
   }
@@ -367,7 +395,7 @@ export function complianceDecisionMock(
 
 export function compoundYieldDecision(yieldBand: YieldBand): DecisionResult {
   return {
-    label: yieldBand,
+    label: qualityPostureLabel(yieldBand),
     band: yieldBand,
     tone: qualityTone(yieldBand as QualityBand),
     action:
@@ -403,7 +431,7 @@ export function extractibleYieldDecision(
   else if (adjusted < 0.75) band = 'Below-normal'
 
   return {
-    label: band,
+    label: qualityPostureLabel(band),
     band,
     tone: qualityTone(band as QualityBand),
     action:
@@ -426,7 +454,7 @@ export function yieldComponentDecision(
   reasoning: string,
 ): DecisionResult {
   return {
-    label: band,
+    label: qualityPostureLabel(band),
     band,
     tone: qualityTone(band as QualityBand),
     action:
@@ -448,7 +476,7 @@ export function yieldVsHistoryDecision(
 ): DecisionResult {
   const signed = deltaPct >= 0 ? `+${deltaPct.toFixed(0)}%` : `${deltaPct.toFixed(0)}%`
   return {
-    label: band,
+    label: historyPostureLabel(band),
     band,
     tone: historyTone(band),
     action:
@@ -480,7 +508,7 @@ export function sourcingDecision(
     yieldBand === 'Below-normal'
   ) {
     return {
-      label: 'Strongest caution',
+      label: 'Alert',
       tone: 'danger',
       action:
         'Diversify volume away; prioritise enhanced testing on remaining lots.',
@@ -489,7 +517,7 @@ export function sourcingDecision(
   }
   if (disease === 'Elevated' || contamination === 'Elevated') {
     return {
-      label: 'Enhanced testing',
+      label: 'Act',
       tone: 'warn',
       action:
         'Enhanced testing recommended — not an automatic volume cut if commercial metrics still look usable.',
@@ -503,7 +531,7 @@ export function sourcingDecision(
     yieldBand === 'Above-normal'
   ) {
     return {
-      label: 'Favorable',
+      label: 'Stable',
       tone: 'ok',
       action:
         'Maintain or increase commitment; flag as a premium-matching opportunity.',
@@ -512,7 +540,7 @@ export function sourcingDecision(
   }
   if (quality === 'Below-normal' && yieldBand === 'Below-normal') {
     return {
-      label: 'Reset expectations',
+      label: 'Act',
       tone: 'warn',
       action:
         'Reset quality/yield expectations with this supplier (conversation, not only testing escalation).',
@@ -520,7 +548,7 @@ export function sourcingDecision(
     }
   }
   return {
-    label: 'Watch',
+    label: 'Monitor',
     tone: 'warn',
     action: 'Routine monitoring; no aggressive volume move yet.',
     reasoning: `Mixed signals — Disease ${disease} · Quality ${quality} · Contamination ${contamination} · Yield ${yieldBand}`,
@@ -561,17 +589,17 @@ export function frameSourcingForRole(
 
   if (role === 'quality-head') {
     const inference =
-      base.label === 'Favorable'
+      base.label === 'Stable'
         ? `${layered} For Quality Head (${focus}), specs look workable — favour allocation that clears colour / heat / moisture for ${company.shortLabel}, with lot testing only where a pathway is soft.`
-        : base.label === 'Strongest caution' || base.label === 'Enhanced testing'
+        : base.label === 'Alert' || base.label === 'Act'
           ? `${layered} For Quality Head (${focus}), do not waive inbound gates: escalate lab / colourimetric checks before customer allocation on this window.`
           : `${layered} For Quality Head (${focus}), hold commitment to inbound QC and watch moisture / ASTA drift against ${company.shortLabel} tolerances before any volume lift.`
     return {
       ...base,
       action:
-        base.label === 'Favorable'
+        base.label === 'Stable'
           ? `${where}: ${base.action} Quality Head — favour lots that clear colour / heat / moisture specs for ${company.shortLabel}; use enhanced lot testing only where bands warrant.`
-          : base.label === 'Strongest caution' || base.label === 'Enhanced testing'
+          : base.label === 'Alert' || base.label === 'Act'
             ? `${where}: ${base.action} Quality Head — escalate lab / colourimetric checks before customer allocation; do not waive specs on alert districts.`
             : `${where}: ${base.action} Quality Head — hold commitment tight to inbound QC gates; watch moisture and ASTA drift against ${company.shortLabel} tolerances.`,
       reasoning: `${inference} Posture: ${base.label}.`,
@@ -580,17 +608,17 @@ export function frameSourcingForRole(
 
   if (role === 'agronomy') {
     const inference =
-      base.label === 'Favorable'
+      base.label === 'Stable'
         ? `${layered} For Agronomy (${focus}), the field window looks workable — keep phenology and ESI drivers under review at the next stage gate.`
-        : base.label === 'Strongest caution' || base.label === 'Enhanced testing'
+        : base.label === 'Alert' || base.label === 'Act'
           ? `${layered} For Agronomy (${focus}), disease or contamination pressure dominates — brief growers on stage-window risk and sampling intensity.`
           : `${layered} For Agronomy (${focus}), treat this as a watch window — re-check ESI drivers and growth-stage fit before any volume move.`
     return {
       ...base,
       action:
-        base.label === 'Favorable'
+        base.label === 'Stable'
           ? `${where}: ${base.action} Agronomy — field window looks workable; keep phenology / ESI drivers under review for the next stage gate.`
-          : base.label === 'Strongest caution' || base.label === 'Enhanced testing'
+          : base.label === 'Alert' || base.label === 'Act'
             ? `${where}: ${base.action} Agronomy — disease or contamination pressure dominates; brief growers on stage-window risk and sampling intensity.`
             : `${where}: ${base.action} Agronomy — treat as a watch window; re-check ESI drivers and growth-stage fit before any volume move.`,
       reasoning: `${inference} Posture: ${base.label}.`,
@@ -599,21 +627,21 @@ export function frameSourcingForRole(
 
   // procurement
   const inference =
-    base.label === 'Favorable'
+    base.label === 'Stable'
       ? `${layered} For Procurement (${focus}), commercial terms permitting, this window supports maintaining or lifting volume for ${company.shortLabel}.`
-      : base.label === 'Strongest caution'
+      : base.label === 'Alert'
         ? `${layered} For Procurement (${focus}), divert volume and keep only testable residual lots.`
-        : base.label === 'Enhanced testing'
+        : base.label === 'Act'
           ? `${layered} For Procurement (${focus}), do not cut volume automatically — price and schedule enhanced testing into the buy.`
           : `${layered} For Procurement (${focus}), no aggressive volume move yet — keep the supplier conversation open and hedges ready.`
   return {
     ...base,
     action:
-      base.label === 'Favorable'
+      base.label === 'Stable'
         ? `${where}: ${base.action} Procurement — suitable to maintain or lift volume for ${company.shortLabel} if commercial terms hold.`
-        : base.label === 'Strongest caution'
+        : base.label === 'Alert'
           ? `${where}: ${base.action} Procurement — divert volume; keep only testable residual lots.`
-          : base.label === 'Enhanced testing'
+          : base.label === 'Act'
             ? `${where}: ${base.action} Procurement — do not cut volume automatically; price and schedule enhanced testing into the buy.`
             : `${where}: ${base.action} Procurement — no aggressive volume move; keep supplier conversation open and hedges ready.`,
     reasoning: `${inference} Posture: ${base.label}.`,

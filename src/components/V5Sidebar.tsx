@@ -72,15 +72,11 @@ export function V5Sidebar({
           <TooltipTrigger asChild>
             <section
               className={cn(
-                'relative min-w-0 cursor-help rounded-lg p-2.5 outline-none',
+                'relative min-w-0 cursor-help rounded-2xl p-2.5 outline-none',
                 combined.tone === 'danger'
                   ? 'overflow-visible'
                   : 'overflow-hidden',
-                combined.tone === 'ok' && 'solid-panel solid-panel-ok',
-                combined.tone === 'warn' && 'solid-panel solid-panel-warn',
-                combined.tone === 'danger' && 'solid-panel solid-panel-danger',
-                combined.tone === 'neutral' &&
-                  'solid-panel solid-panel-neutral',
+                'solid-panel solid-panel-l6',
               )}
             >
               <h2 className="relative z-10 -mt-[6px] text-center font-serif text-[23px] font-bold text-white dark:text-black">
@@ -89,9 +85,7 @@ export function V5Sidebar({
               <p
                 className={cn(
                   'relative z-10 mt-0.5 break-words text-center text-[12px] font-bold uppercase tracking-wider [overflow-wrap:anywhere]',
-                  combined.tone === 'neutral'
-                    ? 'text-ink'
-                    : 'text-[#fffef8] dark:text-[#0a0a0a]',
+                  'text-[#fffef8] dark:text-[#0a0a0a]',
                 )}
               >
                 {insights[0]
@@ -101,9 +95,7 @@ export function V5Sidebar({
               <p
                 className={cn(
                   'relative z-10 mt-2 break-words text-center font-serif text-lg font-semibold leading-snug [overflow-wrap:anywhere]',
-                  combined.tone === 'neutral'
-                    ? 'text-ink'
-                    : 'text-[#fffef8] dark:text-[#0a0a0a]',
+                  'text-[#fffef8] dark:text-[#0a0a0a]',
                 )}
               >
                 {combined.label}
@@ -111,9 +103,7 @@ export function V5Sidebar({
               <p
                 className={cn(
                   'relative z-10 mt-1 break-words text-left text-xs leading-snug [overflow-wrap:anywhere]',
-                  combined.tone === 'neutral'
-                    ? 'text-ink/90'
-                    : 'text-[#fffef8]/90 dark:text-[#0a0a0a]/90',
+                  'text-[#fffef8]/90 dark:text-[#0a0a0a]/90',
                 )}
               >
                 {combined.action}

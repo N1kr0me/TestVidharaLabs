@@ -36,7 +36,7 @@ export function RankingFlipButton({
       type="button"
       onClick={onSelect}
       aria-pressed={active}
-      className="relative block w-full min-w-0 overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 dark:focus-visible:ring-lavender/50"
+      className="relative block w-full min-w-0 overflow-hidden rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 dark:focus-visible:ring-lavender/50"
     >
       {/* Invisible sizer — keeps both flip faces the same size */}
       <div
@@ -52,13 +52,13 @@ export function RankingFlipButton({
         />
       </div>
 
-      <div className="absolute inset-0 overflow-hidden rounded-lg [perspective:800px]">
+      <div className="absolute inset-0 overflow-hidden rounded-2xl [perspective:800px]">
         <motion.div
           className="relative h-full w-full [transform-style:preserve-3d]"
           animate={{ rotateX: active ? 180 : 0 }}
           transition={{ type: 'spring', stiffness: 280, damping: 22 }}
         >
-          <PlasticFace className="bg-[linear-gradient(180deg,#d4c6b0_0%,#cabca6_42%,#b9aa93_100%)] dark:bg-[linear-gradient(180deg,#525252_0%,#474747_45%,#3c3c3c_100%)]">
+          <PlasticFace className="bg-[linear-gradient(145deg,#d4c6b0_0%,#cabca6_48%,#b9aa93_100%)] dark:bg-[linear-gradient(145deg,#525252_0%,#474747_48%,#3c3c3c_100%)]">
             <FaceContent
               rank={rank}
               name={name}
@@ -68,7 +68,7 @@ export function RankingFlipButton({
             />
           </PlasticFace>
 
-          <PlasticFace className="[transform:rotateX(180deg)] bg-[linear-gradient(180deg,#4eaeae_0%,var(--teal)_45%,#2f7a7a_100%)] dark:bg-[linear-gradient(180deg,#9480b8_0%,var(--lavender)_45%,#5c4a80_100%)]">
+          <PlasticFace className="[transform:rotateX(180deg)] bg-[linear-gradient(145deg,#4eaeae_0%,var(--teal)_48%,#2f7a7a_100%)] dark:bg-[linear-gradient(145deg,#9480b8_0%,var(--lavender)_48%,#5c4a80_100%)]">
             <FaceContent
               rank={rank}
               name={name}
@@ -94,7 +94,7 @@ function PlasticFace({
     <div
       className={cn(
         /* plastic-depth (not plastic-tab): must stay position:absolute for flip */
-        'plastic-depth absolute inset-0 flex min-w-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-left',
+        'plastic-depth absolute inset-0 flex min-w-0 items-center gap-1.5 rounded-2xl px-2 py-1.5 text-left',
         '[backface-visibility:hidden]',
         className,
       )}

@@ -25,9 +25,9 @@ import {
 } from '@/lib/sessionClock'
 import { cn } from '@/lib/utils'
 
-/** Match unopened layer tab fill + navbar plastic depth. */
+/** Idle chrome — same hues, item-card soft diagonal volume. */
 const TAB_IDLE_FILL =
-  'plastic-tab bg-[linear-gradient(180deg,#d4c6b0_0%,#cabca6_50%,#b9aa93_100%)] dark:bg-[linear-gradient(180deg,#525252_0%,#474747_50%,#3c3c3c_100%)]'
+  'plastic-tab bg-[linear-gradient(145deg,#d4c6b0_0%,#cabca6_48%,#b9aa93_100%)] dark:bg-[linear-gradient(145deg,#525252_0%,#474747_48%,#3c3c3c_100%)]'
 
 const TAB_IDLE_TEXT = 'text-black dark:text-white'
 
@@ -159,7 +159,7 @@ export function V5FilterBar({
                     onClick={() => setDistrictOpen((o) => !o)}
                     aria-expanded={districtOpen}
                     className={cn(
-                      'chooser-panel relative flex h-full w-full flex-col justify-center rounded-lg px-2.5 py-1.5 text-left sm:py-1',
+                      'chooser-panel relative flex h-full w-full flex-col justify-center rounded-2xl px-2.5 py-1.5 text-left sm:py-1',
                       districtOpen && 'chooser-panel-open z-[1002]',
                     )}
                   >
@@ -186,7 +186,7 @@ export function V5FilterBar({
                           setDistrictOpen(false)
                         }}
                       />
-                      <div className="panel-edge absolute top-full right-0 left-0 z-[1001] mt-1 max-h-[min(16rem,50vh)] overflow-y-auto rounded-lg bg-white p-2 text-black shadow-lg dark:bg-black dark:text-white">
+                      <div className="panel-edge absolute top-full right-0 left-0 z-[1001] mt-1 max-h-[min(16rem,50vh)] overflow-y-auto rounded-2xl bg-white p-2.5 text-black shadow-[0_12px_32px_-8px_rgba(0,0,0,0.28),0_4px_12px_-2px_rgba(0,0,0,0.12)] dark:bg-black dark:text-white dark:shadow-[0_12px_36px_-8px_rgba(0,0,0,0.55),0_4px_14px_-2px_rgba(0,0,0,0.35)]">
                         {Object.entries(byState).map(([state, list]) => (
                           <div key={state} className="mb-2 last:mb-0">
                             <p className="text-[10px] font-medium uppercase text-black/55 dark:text-white/55">
@@ -271,7 +271,7 @@ function MetaBox({
   return (
     <div
       className={cn(
-        'relative rounded-lg px-2.5 py-1',
+        'relative rounded-2xl px-2.5 py-1',
         TAB_IDLE_FILL,
         TAB_IDLE_TEXT,
         className,
@@ -334,7 +334,7 @@ function SelectBox({
   return (
     <div
       className={cn(
-        'chooser-panel relative min-w-0 rounded-lg px-2.5 py-1.5 sm:min-w-[8.5rem] sm:py-1',
+        'chooser-panel relative min-w-0 rounded-2xl px-2.5 py-1.5 sm:min-w-[8.5rem] sm:py-1',
         menu.open && 'chooser-panel-open',
       )}
     >
@@ -389,7 +389,7 @@ function ChooserSelectCard({
   return (
     <div
       className={cn(
-        'chooser-panel relative flex flex-col justify-center rounded-lg px-2.5 py-1',
+        'chooser-panel relative flex flex-col justify-center rounded-2xl px-2.5 py-1',
         menu.open && 'chooser-panel-open',
         className,
       )}
@@ -406,7 +406,7 @@ function ChooserSelectCard({
           onChange(e.target.value)
           menu.onMenuChange()
         }}
-        className="relative z-10 mt-0.5 w-full rounded border border-[color:var(--panel-edge)] bg-white px-1.5 py-0.5 text-xs font-medium text-black themed-select dark:bg-black dark:text-white"
+        className="relative z-10 mt-0.5 w-full rounded-xl border border-[color:var(--panel-edge)] bg-white px-1.5 py-0.5 text-xs font-medium text-black themed-select dark:bg-black dark:text-white"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -435,7 +435,7 @@ function StatChip({
   return (
     <div
       className={cn(
-        'relative flex min-w-0 flex-col items-center justify-center rounded-lg px-2 py-1.5 sm:min-w-[5rem] sm:flex-1 sm:px-2.5 sm:py-1',
+        'relative flex min-w-0 flex-col items-center justify-center rounded-2xl px-2 py-1.5 sm:min-w-[5rem] sm:flex-1 sm:px-2.5 sm:py-1',
         solid && 'solid-panel',
         tone === 'danger' &&
           (value > 0
